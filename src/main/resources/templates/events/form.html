@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование ивента</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .form-group { margin-bottom: 10px; }
+        .error { color: red; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+<h1 th:if="${event.id == null}">Добавить ивент</h1>
+<h1 th:if="${event.id != null}">Редактировать ивент</h1>
+
+<form th:action="${event.id == null} ? '/events' : '/events/' + ${event.id} + '/update'"
+      th:object="${event}" method="post">
+
+    <div class="form-group">
+        <label>Название:</label>
+        <input type="text" th:field="*{title}" required>
+        <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+    </div>
+
+    <div class="form-group">
+        <label>Дата и время:</label>
+        <input type="datetime-local" th:field="*{eventDate}" required>
+        <div class="error" th:if="${#fields.hasErrors('eventDate')}" th:errors="*{eventDate}"></div>
+    </div>
+
+    <div class="form-group">
+        <label>Место проведения:</label>
+        <select th:field="*{venue}">
+            <option th:each="v : ${venues}" th:value="${v.id}" th:text="${v.name}">Место</option>
+        </select>
+        <select th:field="*{organizer}">
+            <option th:each="u : ${organizers}" th:value="${u.id}" th:text="${u.username}">Организатор</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Организатор:</label>
+        <select th:field="*{organizer}">
+            <option th:each="u : ${organizers}" th:value="${u}" th:text="${u.username}">Организатор</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Описание:</label>
+        <textarea th:field="*{description}" rows="5" cols="40"></textarea>
+    </div>
+
+    <button type="submit">Сохранить</button>
+    <a th:href="@{/events}">Отмена</a>
+</form>
+</body>
+</html>

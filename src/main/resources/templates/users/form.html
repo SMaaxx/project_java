@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование пользователя</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .form-group { margin-bottom: 10px; }
+        .error { color: red; font-size: 0.9em; }
+        .nav { margin-bottom: 20px; padding: 10px; background: #e9ecef; border-radius: 5px; }
+        .nav a { margin-right: 15px; }
+    </style>
+</head>
+<body>
+
+<!-- Навигация -->
+<div class="nav">
+    <a th:href="@{/events}">📅 Ивенты</a>
+    <a th:href="@{/users}">👥 Пользователи</a>
+    <a th:href="@{/venues}">📍 Места</a>
+</div>
+
+<h1 th:if="${user.id == null}">Добавить пользователя</h1>
+<h1 th:if="${user.id != null}">Редактировать пользователя</h1>
+
+<!-- ВАЖНО: правильно формируем action -->
+<form th:action="${user.id == null} ? '/users' : '/users/' + ${user.id} + '/update'"
+      th:object="${user}" method="post">
+
+    <div class="form-group">
+        <label>Имя пользователя:</label>
+        <input type="text" th:field="*{username}" required>
+        <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+    </div>
+
+    <div class="form-group">
+        <label>Email:</label>
+        <input type="email" th:field="*{email}" required>
+        <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+    </div>
+
+    <div class="form-group">
+        <label>Пароль (временно в открытом виде):</label>
+        <input type="text" th:field="*{passwordHash}" required>
+        <div class="error" th:if="${#fields.hasErrors('passwordHash')}" th:errors="*{passwordHash}"></div>
+    </div>
+
+    <div class="form-group">
+        <label>Роль:</label>
+        <select th:field="*{role}">
+            <!-- Передаём ID, а не объект целиком -->
+            <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}">роль</option>
+        </select>
+    </div>
+
+    <button type="submit">Сохранить</button>
+    <a th:href="@{/users}">Отмена</a>
+</form>
+</body>
+</html>

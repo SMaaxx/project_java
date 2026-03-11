@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Места проведения</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+<h1>Список мест проведения</h1>
+
+<a th:href="@{/venues/new}">➕ Добавить место</a>
+
+<div style="margin-bottom: 20px; background: #f0f0f0; padding: 10px;">
+    <a th:href="@{/events}" style="margin-right: 15px;">📅 Ивенты</a>
+    <a th:href="@{/users}" style="margin-right: 15px;">👥 Пользователи</a>
+    <a th:href="@{/venues}" style="margin-right: 15px;">📍 Места</a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Адрес</th>
+        <th>Вместимость</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="venue : ${venues}">
+        <td th:text="${venue.name}">Главный зал</td>
+        <td th:text="${venue.address}">ул. Ленина, 1</td>
+        <td th:text="${venue.capacity}">500</td>
+        <td>
+            <a th:href="@{/venues/{id}/edit(id=${venue.id})}">✏️</a>
+            <form th:action="@{/venues/{id}/delete(id=${venue.id})}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Удалить место?')">🗑️</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<p th:if="${#lists.isEmpty(venues)}">Нет мест.</p>
+
+</body>
+</html>

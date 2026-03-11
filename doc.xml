@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-documentation>
+    <general>
+        <name>BSS (Booking System Service)</name>
+        <description>Веб-приложение для управления мероприятиями (ивентами), пользователями и местами проведения.</description>
+        <version>0.0.1-SNAPSHOT</version>
+        <technologies>
+            <technology>Java 17</technology>
+            <technology>Spring Boot 3.3.4</technology>
+            <technology>Spring MVC</technology>
+            <technology>Spring Data JPA (Hibernate)</technology>
+            <technology>Thymeleaf</technology>
+            <technology>PostgreSQL</technology>
+            <technology>Lombok</technology>
+            <technology>Maven</technology>
+        </technologies>
+    </general>
+
+    <package-structure>
+        <package name="com.example.BSS.controller">
+            <description>Содержит классы-контроллеры, обрабатывающие HTTP-запросы и возвращающие HTML-страницы.</description>
+        </package>
+        <package name="com.example.BSS.service">
+            <description>Содержит сервисы с бизнес-логикой приложения.</description>
+        </package>
+        <package name="com.example.BSS.repository">
+            <description>Содержит интерфейсы репозиториев для работы с базой данных через Spring Data JPA.</description>
+        </package>
+        <package name="com.example.BSS.entity">
+            <description>Содержит JPA-сущности, соответствующие таблицам базы данных.</description>
+        </package>
+    </package-structure>
+
+    <controllers>
+        <controller name="EventController" path="/events">
+            <description>Управление мероприятиями (CRUD + дополнительные операции).</description>
+            <methods>
+                <method name="list" http-method="GET" path="">
+                    <parameters>
+                        <parameter name="fromDate" type="String" required="false">Начальная дата фильтра (yyyy-MM-dd)</parameter>
+                        <parameter name="toDate" type="String" required="false">Конечная дата фильтра (yyyy-MM-dd)</parameter>
+                    </parameters>
+                    <return>events/list</return>
+                    <description>Отображает список всех ивентов с возможностью фильтрации по дате.</description>
+                </method>
+                <method name="newEvent" http-method="GET" path="/new">
+                    <return>events/form</return>
+                    <description>Отображает форму для создания нового ивента.</description>
+                </method>
+                <method name="save" http-method="POST" path="">
+                    <parameters>
+                        <parameter name="event" type="Event" from="form">Данные нового ивента</parameter>
+                    </parameters>
+                    <return>redirect:/events</return>
+                    <description>Сохраняет новый ивент в базу данных.</description>
+                </method>
+                <method name="edit" http-method="GET" path="/{id}/edit">
+                    <parameters>
+                        <parameter name="id" type="Long" from="path">Идентификатор ивента</parameter>
+                    </parameters>
+                    <return>events/form</return>
+                    <description>Отображает форму редактирования существующего ивента.</description>
+                </method>
+                <method name="update" http-method="POST" path="/{id}/update">
+                    <parameters>
+                        <parameter name="id" type="Long" from="path">Идентификатор ивента</parameter>
+                        <parameter name="event" type="Event" from="form">Обновлённые данные ивента</parameter>
+                    </parameters>
+                    <return>redirect:/events</return>
+                    <description>Обновляет существующий ивент.</description>
+                </method>
+                <method name="delete" http-method="POST" path="/{id}/delete">
+                    <parameters>
+                        <parameter name="id" type="Long" from="path">Идентификатор ивента</parameter>
+                    </parameters>
+                    <return>redirect:/events</return>
+                    <description>Удаляет ивент по идентификатору.</description>
+                </method>
+                <method name="registrations" http-method="GET" path="/{id}/registrations">
+                    <parameters>
+                        <parameter name="id" type="Long" from="path">Идентификатор ивента</parameter>
+                    </parameters>
+                    <return>events/registrations</return>
+                    <description>Отображает список пользователей, зарегистрированных на данный ивент.</description>
+                </method>
+            </methods>
+        </controller>
+        <controller name="UserController" path="/users">
+            <description>Управление пользователями (CRUD).</description>
+            <methods>
+                <method name="list" http-method="GET" path="">
+                    <return>users/list</return>
+                    <description>Отображает список всех пользователей.</description>
+                </method>
+                <method name="newUser" http-method="GET" path="/new">
+                    <return>users/form</return>
+                    <description>Отображает форму создания нового пользователя.</description>
+                </method>
+                <method name="save" http-method="POST" path="">
+                    <parameters>
+                        <parameter name="user" type="User" from="form">Данные нового пользователя</parameter>
+                    </parameters>
+                    <return>redirect:/users</return>
+                    <description>Сохраняет нового пользователя в базу данных.</description>
+                </method>
+                <method name="edit" http-method="GET" path="/{id}/edit">
+                    <parameters>
+                        <parameter name="id" type="Long" from="path">Идентификатор пользователя</parameter>
+                    </parameters>
+                    <return>users/form</return>
+                    <description>Отображает форму редактирования пользователя.</description>
+                </method>
+                <method name="update" http-method="POST" path="/{id}/update">
+                    <parameters>
+                        <parameter name="id" type="Long" from="path">Идентификатор пользователя</parameter>
+                        <parameter name="user" type="User" from="form">Обновлённые данные пользователя</parameter>
+                    </parameters>
+                    <return>redirect:/users</return>
+                    <description>Обновляет данные пользователя.</description>
+                </method>
+                <method name="delete" http-method="POST" path="/{id}/delete">
+                    <parameters>
+                        <parameter name="id" type="Long" from="path">Идентификатор пользователя</parameter>
+                    </parameters>
+                    <return>redirect:/users</return>
+                    <description>Удаляет пользователя.</description>
+                </method>
+            </methods>
+        </controller>
+        <controller name="VenueController" path="/venues">
+            <description>Управление местами проведения.</description>
+        </controller>
+        <controller name="RegistrationController" path="/registrations">
+            <description>Управление регистрациями пользователей на ивенты.</description>
+            <methods>
+                <method name="addRegistrationForm" http-method="GET" path="/event/{eventId}/add">
+                    <return>registrations/add</return>
+                    <description>Отображает форму добавления участника на ивент.</description>
+                </method>
+                <method name="addRegistration" http-method="POST" path="/event/{eventId}">
+                    <parameters>
+                        <parameter name="eventId" type="Long" from="path">Идентификатор ивента</parameter>
+                        <parameter name="userId" type="Long" from="form">Идентификатор пользователя</parameter>
+                    </parameters>
+                    <return>redirect:/events/{eventId}/registrations</return>
+                    <description>Добавляет пользователя в список участников ивента с проверкой вместимости.</description>
+                </method>
+                <method name="deleteRegistration" http-method="POST" path="/event/{eventId}/user/{userId}/delete">
+                    <parameters>
+                        <parameter name="eventId" type="Long" from="path">Идентификатор ивента</parameter>
+                        <parameter name="userId" type="Long" from="path">Идентификатор пользователя</parameter>
+                    </parameters>
+                    <return>redirect:/events/{eventId}/registrations</return>
+                    <description>Удаляет регистрацию пользователя на ивент.</description>
+                </method>
+            </methods>
+        </controller>
+        <controller name="HomeController" path="/">
+            <methods>
+                <method name="home" http-method="GET" path="">
+                    <return>redirect:/events</return>
+                    <description>Перенаправляет на список ивентов.</description>
+                </method>
+            </methods>
+        </controller>
+    </controllers>
+
+    <services>
+        <service name="EventService">
+            <description>Бизнес-логика для работы с мероприятиями.</description>
+            <methods>
+                <method name="findAll">Возвращает список всех ивентов.</method>
+                <method name="findById">Находит ивент по ID.</method>
+                <method name="findFiltered">Фильтрует ивенты по дате.</method>
+                <method name="save">Сохраняет или обновляет ивент.</method>
+                <method name="deleteById">Удаляет ивент.</method>
+            </methods>
+        </service>
+        <service name="UserService">
+            <description>Бизнес-логика для пользователей.</description>
+            <methods>
+                <method name="findAll">Все пользователи.</method>
+                <method name="findById">Поиск по ID.</method>
+                <method name="findOrganizers">Только организаторы.</method>
+                <method name="findUsers">Только обычные пользователи.</method>
+                <method name="save">Сохранение пользователя.</method>
+                <method name="deleteById">Удаление.</method>
+            </methods>
+        </service>
+        <service name="VenueService">
+            <description>Бизнес-логика для мест.</description>
+            <!-- аналогично -->
+        </service>
+        <service name="RoleService">
+            <description>Бизнес-логика для ролей.</description>
+        </service>
+        <service name="EventRegistrationService">
+            <description>Бизнес-логика для регистраций. Содержит проверку вместимости места.</description>
+            <methods>
+                <method name="registerUser">Регистрирует пользователя на ивент, если есть свободные места.</method>
+                <method name="unregisterUser">Отменяет регистрацию.</method>
+                <method name="countRegistrationsByEvent">Подсчитывает количество участников на ивенте.</method>
+            </methods>
+        </service>
+    </services>
+
+    <!-- Репозитории (доступ к данным) -->
+    <repositories>
+        <repository name="UserRepository">
+            <description>Интерфейс для доступа к таблице users.</description>
+            <custom-queries>
+                <query name="findByRoleName">JPQL: select u from User u where u.role.name = ?1</query>
+            </custom-queries>
+        </repository>
+        <repository name="EventRepository">
+            <description>Репозиторий для событий.</description>
+            <custom-queries>
+                <query name="findByEventDateBetween">Поиск событий по диапазону дат.</query>
+            </custom-queries>
+        </repository>
+        <repository name="EventRegistrationRepository">
+            <description>Репозиторий для регистраций с составным ключом.</description>
+            <custom-queries>
+                <query name="deleteByEventIdAndUserId">JPQL-запрос на удаление по составному ключу.</query>
+                <query name="countByEventId">Подсчёт количества регистраций на событие.</query>
+            </custom-queries>
+        </repository>
+        <!-- остальные репозитории -->
+    </repositories>
+
+    <entities>
+        <entity name="User">
+            <table>users</table>
+            <fields>
+                <field name="id" type="Long" annotation="@Id @GeneratedValue">Первичный ключ</field>
+                <field name="username" type="String" annotation="@Column(unique=true, nullable=false)">Имя пользователя</field>
+                <field name="email" type="String" annotation="@Column(unique=true, nullable=false)">Email</field>
+                <field name="passwordHash" type="String">Хеш пароля</field>
+                <field name="role" type="Role" annotation="@ManyToOne">Роль пользователя</field>
+                <field name="organizedEvents" type="List<Event>" >События, организованные пользователем</field>
+                <field name="registrations" type="List<EventRegistration>" annotation="@OneToMany">Регистрации пользователя</field>
+            <fields/>
+        <entity/>
+
+        <entity name="Role">
+        <table>roles</table>
+        <fields>
+            <field name="id" type="Long">Идентификатор</field>
+            <field name="name" type="String" annotation="@Column(unique=true)">Название роли</field>
+        </fields>
+        </entity>
+
+        <entity name="Event">
+        <table>events</table>
+            <fields>
+                <field name="id" type="Long">Идентификатор</field>
+                <field name="title" type="String">Название</field>
+                <field name="description" type="String">Описание</field>
+                <field name="eventDate" type="LocalDateTime">Дата и время проведения</field>
+                <field name="venue" type="Venue" annotation="@ManyToOne">Место проведения</field>
+                <field name="organizer" type="User" annotation="@ManyToOne">Организатор</field>
+                <field name="registrations" type="List<EventRegistration>">Регистрации</field>
+            </fields>
+        </entity>
+
+        <entity name="Venue">
+            <table>venues</table>
+            <fields>
+                <field name="id" type="Long">Идентификатор</field>
+                <field name="name" type="String">Название места</field>
+                <field name="address" type="String">Адрес</field>
+                <field name="capacity" type="Integer">Вместимость</field>
+            </fields>
+        </entity>
+
+        <entity name="EventRegistration">
+            <table>event_registrations</table>
+            <description>Связующая таблица для регистраций (многие ко многим с дополнительным полем даты).</description>
+            <fields>
+                <field name="id" type="EventRegistrationId" annotation="@EmbeddedId">Составной ключ</field>
+                <field name="user" type="User">Пользователь</field>
+                <field name="event" type="Event">Ивент</field>
+                <field name="registrationDate" type="LocalDateTime">Дата регистрации</field>
+            </fields>
+        </entity>
+
+        <entity name="EventRegistrationId" embeddable="true">
+            <fields>
+                <field name="userId" type="Long">Часть составного ключа</field>
+                <field name="eventId" type="Long">Часть составного ключа</field>
+            </fields>
+        </entity>
+    </entities>
+
+    <configuration>
+        <file name="application.properties">
+            <description>Основной файл конфигурации Spring Boot.</description>
+            <properties>
+                <property name="spring.datasource.url">jdbc:postgresql://localhost:5432/event_planner_db</property>
+                <property name="spring.datasource.username">postgres</property>
+                <property name="spring.datasource.password">****</property>
+                <property name="spring.jpa.hibernate.ddl-auto">update</property>
+                <property name="spring.jpa.show-sql">true</property>
+                <property name="spring.thymeleaf.cache">false</property>
+            </properties>
+        </file>
+    </configuration>
+</project-documentation>
